@@ -1,0 +1,168 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+
+/* ------------------ PRODUCT CLASS ------------------ */
+class Product {
+    private int productId;
+    private String productName;
+    private int quantity;
+    private double price;
+
+    Product(int productId, String productName, int quantity, double price) {
+        this.productId = productId;
+        this.productName = productName;
+        this.quantity = quantity;
+        this.price = price;
+    }
+
+    int getProductId() {
+        return productId;
+    }
+
+    int getQuantity() {
+        return quantity;
+    }
+
+    void addStock(int qty) {
+        quantity += qty;
+    }
+
+    boolean sellProduct(int qty) {
+        if (qty <= quantity) {
+            quantity -= qty;
+            return true;
+        }
+        return false;
+    }
+
+    void displayProduct() {
+        System.out.println(productId + "\t" + productName + "\tQty: " 
+                + quantity + "\tPrice: ₹" + price);
+    }
+}
+
+/* ------------------ INVENTORY CLASS ------------------ */
+class Inventory {
+    ArrayList<Product> products = new ArrayList<>();
+    Scanner sc = new Scanner(System.in);
+
+    void addProduct() {
+        System.out.print("Enter Product ID: ");
+        int id = sc.nextInt();
+        sc.nextLine();
+
+        System.out.print("Enter Product Name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Enter Quantity: ");
+        int qty = sc.nextInt();
+
+        System.out.print("Enter Price: ");
+        double price = sc.nextDouble();
+
+        products.add(new Product(id, name, qty, price));
+        System.out.println("Product added successfully.");
+    }
+
+    void viewProducts() {
+        if (products.isEmpty()) {
+            System.out.println("Inventory is empty.");
+            return;
+        }
+
+        System.out.println("\nID\tName\tDetails");
+        for (Product p : products) {
+            p.displayProduct();
+            if (p.getQuantity() < 5) {
+                System.out.println("⚠ Low Stock Alert!");
+            }
+        }
+    }
+
+    Product findProduct(int id) {
+        for (Product p : products) {
+            if (p.getProductId() == id) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    void updateStock() {
+        System.out.print("Enter Product ID: ");
+        int id = sc.nextInt();
+
+        Product p = findProduct(id);
+        if (p != null) {
+            System.out.print("Enter quantity to add: ");
+            int qty = sc.nextInt();
+            p.addStock(qty);
+            System.out.println("Stock updated.");
+        } else {
+            System.out.println("Product not found.");
+        }
+    }
+
+    void sellProduct() {
+        System.out.print("Enter Product ID: ");
+        int id = sc.nextInt();
+
+        Product p = findProduct(id);
+        if (p != null) {
+            System.out.print("Enter quantity to sell: ");
+            int qty = sc.nextInt();
+
+            if (p.sellProduct(qty)) {
+                System.out.println("Product sold successfully.");
+            } else {
+                System.out.println("Insufficient stock.");
+            }
+        } else {
+            System.out.println("Product not found.");
+        }
+    }
+}
+
+/* ------------------ MAIN CLASS ------------------ */
+public class InventoryManagementSystem {
+
+    public static void main(String[] args) {
+        Inventory inventory = new Inventory();
+        Scanner sc = new Scanner(System.in);
+
+        int choice;
+        do {
+            System.out.println("\n===== INVENTORY MANAGEMENT SYSTEM =====");
+            System.out.println("1. Add Product");
+            System.out.println("2. View Inventory");
+            System.out.println("3. Update Stock");
+            System.out.println("4. Sell Product");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+
+            choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    inventory.addProduct();
+                    break;
+                case 2:
+                    inventory.viewProducts();
+                    break;
+                case 3:
+                    inventory.updateStock();
+                    break;
+                case 4:
+                    inventory.sellProduct();
+                    break;
+                case 5:
+                    System.out.println("Exiting Inventory System.");
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        } while (choice != 5);
+
+        sc.close();
+    }
+}
